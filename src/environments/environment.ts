@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  client_id: 'fdd62388-3c65-4a48-993c-149c771cd17c',
+  redirect_uri: 'http://localhost:4200/login',
+  openid_connect_url: 'https://gluu.local.org',
+  scope: 'openid email profile',
+  extra: {prompt: 'consent', access_type: 'offline'}
 };
 
 /*
