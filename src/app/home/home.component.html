@@ -4,4 +4,10 @@
       <h5 class="card-title">Welcome in Gluu Security !!!</h5>
     </div>
   </div>
+  <br/>
+  <div class="card text-white bg-success mb-3" *ngIf="userInfo.name">
+    <div class="card-body">
+      <pre class="card-text">{{userInfo | json}}</pre>
+    </div>
+  </div>
 </div>

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  client_id: 'fdd62388-3c65-4a48-993c-149c771cd17c',
+  client_id: 'b4361065-79ac-48c9-8cc6-0cda5e6cf631',
   redirect_uri: 'http://localhost:4200/login',
   openid_connect_url: 'https://gluu.local.org',
   scope: 'openid email profile',

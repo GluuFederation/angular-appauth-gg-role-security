@@ -2,20 +2,86 @@ import {Injectable} from '@angular/core';
 import {
   AuthorizationServiceConfigurationJson,
   AuthorizationServiceConfiguration,
-  AuthorizationRequest, RedirectRequestHandler,
-  FetchRequestor, LocalStorageBackend, DefaultCrypto
+  AuthorizationRequest,
+  RedirectRequestHandler,
+  FetchRequestor,
+  LocalStorageBackend,
+  DefaultCrypto,
+  BaseTokenRequestHandler,
+  AuthorizationNotifier,
+  GRANT_TYPE_AUTHORIZATION_CODE,
+  TokenRequest
 } from '@openid/appauth';
 import {NoHashQueryStringUtils} from '../no-hash-query-string-utils';
 import {environment} from '../../../environments/environment';
+import {ActivatedRoute, Router} from '@angular/router';
+import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {distinctUntilChanged} from 'rxjs/operators';
 
 @Injectable()
 export class AuthService {
-  configuration: AuthorizationServiceConfigurationJson = null;
+  private configuration: AuthorizationServiceConfigurationJson = null;
   error: any = null;
-  authorizationHandler: any = null;
+  private authorizationHandler: any = null;
+  private tokenHandler: any = null;
+  notifier: any = null;
+  private request: any = null;
+  private response: any = null;
 
-  constructor() {
-    this.authorizationHandler = new RedirectRequestHandler(new LocalStorageBackend(), new NoHashQueryStringUtils(), window.location, new DefaultCrypto());
+  private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
+  public isAuthenticated = this.isAuthenticatedSubject.asObservable();
+
+  private currentUserSubject = new BehaviorSubject<any>({});
+  public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
+
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
+    this.authorizationHandler = new RedirectRequestHandler(
+      new LocalStorageBackend(),
+      new NoHashQueryStringUtils(),
+      window.location,
+      new DefaultCrypto());
+    this.tokenHandler = new BaseTokenRequestHandler(new FetchRequestor());
+    this.notifier = new AuthorizationNotifier();
+    this.authorizationHandler.setAuthorizationNotifier(this.notifier);
+    this.notifier.setAuthorizationListener((request, response, error) => {
+      console.log('Authorization request complete ', request, response, error);
+      if (response) {
+        this.request = request;
+        this.response = response;
+        const code = response.code;
+        console.log(`Authorization Code  ${response.code}`);
+
+        let extras = null;
+        if (this.request && this.request.internal) {
+          extras = {};
+          extras.code_verifier = this.request.internal.code_verifier;
+        }
+
+        const tokenRequest = new TokenRequest({
+          client_id: environment.client_id,
+          redirect_uri: environment.redirect_uri,
+          grant_type: GRANT_TYPE_AUTHORIZATION_CODE,
+          code,
+          refresh_token: undefined,
+          extras
+        });
+
+        AuthorizationServiceConfiguration.fetchFromIssuer(environment.openid_connect_url, new FetchRequestor())
+          .then((oResponse: any) => {
+            this.configuration = oResponse;
+            return this.tokenHandler.performTokenRequest(this.configuration, tokenRequest);
+          })
+          .then((oResponse) => {
+            this.saveToken(oResponse.accessToken);
+            this.isAuthenticatedSubject.next(true);
+            this.router.navigate(['/']);
+          })
+          .catch(oError => {
+            this.error = oError;
+          });
+      }
+    });
   }
 
   redirect() {
@@ -36,4 +102,45 @@ export class AuthService {
         this.error = error;
       });
   }
+
+  handleCodeAndAuthorization() {
+    this.authorizationHandler.completeAuthorizationRequestIfPossible();
+  }
+
+  getToken(): string {
+    return window.localStorage.accessToken;
+  }
+
+  saveToken(token: string) {
+    window.localStorage.accessToken = token;
+  }
+
+  destroyToken() {
+    this.isAuthenticatedSubject.next(false);
+    window.localStorage.removeItem('accessToken');
+  }
+
+  // Verify accessToken in localstorage with server & load ..
+  // This runs once on application startup
+  populate() {
+    if (this.getToken()) {
+      this.getUserInfo()
+        .subscribe(
+          (data) => this.setAuth(data.user),
+          err => this.destroyToken()
+        );
+    } else {
+      this.destroyToken();
+    }
+  }
+
+  setAuth(userInfo) {
+    this.currentUserSubject.next(userInfo);
+    this.isAuthenticatedSubject.next(true);
+  }
+
+  getUserInfo(): Observable<any> {
+    return this.http.get(environment.openid_connect_url + '/oxauth/restv1/userinfo');
+  }
+
 }
