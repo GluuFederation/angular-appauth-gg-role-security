@@ -18,6 +18,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {BehaviorSubject, Observable, ReplaySubject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {distinctUntilChanged} from 'rxjs/operators';
+import {ApiService} from './api.service';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +36,7 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>({});
   public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
+  constructor(private route: ActivatedRoute, private router: Router, private apiService: ApiService) {
     this.authorizationHandler = new RedirectRequestHandler(
       new LocalStorageBackend(),
       new NoHashQueryStringUtils(),
@@ -75,6 +76,7 @@ export class AuthService {
           .then((oResponse) => {
             this.saveToken(oResponse.accessToken);
             this.isAuthenticatedSubject.next(true);
+            // this.populate();
             this.router.navigate(['/']);
           })
           .catch(oError => {
@@ -126,7 +128,7 @@ export class AuthService {
     if (this.getToken()) {
       this.getUserInfo()
         .subscribe(
-          (data) => this.setAuth(data.user),
+          (data) => this.setAuth(data),
           err => this.destroyToken()
         );
     } else {
@@ -140,7 +142,7 @@ export class AuthService {
   }
 
   getUserInfo(): Observable<any> {
-    return this.http.get(environment.openid_connect_url + '/oxauth/restv1/userinfo');
+    return this.apiService.get(environment.openid_connect_url + '/oxauth/restv1/userinfo');
   }
 
 }

@@ -8,7 +8,9 @@ export const environment = {
   redirect_uri: 'http://localhost:4200/login',
   openid_connect_url: 'https://gluu.local.org',
   scope: 'openid email profile',
-  extra: {prompt: 'consent', access_type: 'offline'}
+  extra: {prompt: 'consent', access_type: 'offline'},
+  ggURL: 'https://gluu.local.org:9443',
+  companyEndpoint: '/company'
 };
 
 /*
