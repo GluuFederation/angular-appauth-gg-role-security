@@ -74,7 +74,7 @@ export class AuthService {
             return this.tokenHandler.performTokenRequest(this.configuration, tokenRequest);
           })
           .then((oResponse) => {
-            this.saveToken(oResponse.accessToken);
+            this.saveTokens(oResponse);
             this.isAuthenticatedSubject.next(true);
             // this.populate();
             this.router.navigate(['/']);
@@ -113,8 +113,9 @@ export class AuthService {
     return window.localStorage.accessToken;
   }
 
-  saveToken(token: string) {
-    window.localStorage.accessToken = token;
+  saveTokens(tokens) {
+    window.localStorage.accessToken = tokens.accessToken;
+    window.localStorage.idToken = tokens.idToken;
   }
 
   destroyToken() {
@@ -145,4 +146,8 @@ export class AuthService {
     return this.apiService.get(environment.openid_connect_url + '/oxauth/restv1/userinfo');
   }
 
+  logout() {
+    const {openid_connect_url, end_session_endpoint , logout_redirect_uri} = environment;
+    window.location.href = openid_connect_url + end_session_endpoint + '?' + 'post_logout_redirect_uri=' + logout_redirect_uri + '&id_token_hint=' + window.localStorage.idToken;
+  }
 }

@@ -8,6 +8,7 @@ import {HeaderComponent, SharedModule} from './shared';
 import {LoginModule} from './login/login.module';
 import {CoreModule} from './core';
 import {CompanyModule} from './company/company.module';
+import {LogoutModule} from './logout/logout.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {CompanyModule} from './company/company.module';
     CompanyModule,
     LoginModule,
     CoreModule,
-    SharedModule
+    SharedModule,
+    LogoutModule
   ],
   providers: [],
   bootstrap: [AppComponent]

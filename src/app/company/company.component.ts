@@ -16,4 +16,11 @@ export class CompanyComponent implements OnInit {
         this.companies = companies;
       });
   }
+
+  delete(id) {
+    this.companyService.delete(id).subscribe((company) => {
+      alert('Company has been deleted successfully!');
+      this.companies = this.companies.filter(c => c.id !== id);
+    });
+  }
 }

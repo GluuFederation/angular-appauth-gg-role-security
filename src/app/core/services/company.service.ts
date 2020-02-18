@@ -10,4 +10,8 @@ export class CompanyService {
   get(): Observable<Company[]> {
     return this.apiService.get(environment.ggURL + environment.companyEndpoint);
   }
+
+  delete(id): Observable<Company> {
+    return this.apiService.delete(environment.ggURL + environment.companyEndpoint + '/' + id);
+  }
 }

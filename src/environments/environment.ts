@@ -6,7 +6,9 @@ export const environment = {
   production: false,
   client_id: 'b4361065-79ac-48c9-8cc6-0cda5e6cf631',
   redirect_uri: 'http://localhost:4200/login',
+  logout_redirect_uri: 'http://localhost:4200',
   openid_connect_url: 'https://gluu.local.org',
+  end_session_endpoint: '/oxauth/restv1/end_session', // you gluu server end_session_endpoint
   scope: 'openid email profile',
   extra: {prompt: 'consent', access_type: 'offline'},
   ggURL: 'https://gluu.local.org:9443',

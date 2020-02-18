@@ -13,6 +13,9 @@ export class ApiService {
     if (error.status === 401) {
       window.location.href = '/';
     }
+    if (error.status === 403) {
+      alert('You have not enough permission for this operation');
+    }
     return throwError(error.error);
   }
 

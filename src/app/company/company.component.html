@@ -13,6 +13,7 @@
           <th>Id</th>
           <th>Name</th>
           <th>Description</th>
+          <th>Delete</th>
         </tr>
         </thead>
         <tbody>
@@ -20,6 +21,7 @@
           <td>{{company.id}}</td>
           <td>{{company.title}}</td>
           <td>{{company.body}}</td>
+          <td><button class="btn btn-danger" (click)="delete(company.id)">Delete</button> </td>
         </tr>
         </tbody>
       </table>
