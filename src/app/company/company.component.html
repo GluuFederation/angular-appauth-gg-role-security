@@ -2,6 +2,15 @@
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">Company</h5>
+      <form [formGroup]="companyForm" class="form-inline">
+        <fieldset class="form-group">
+          <input class="form-control mb-2 mr-sm-2" formControlName="title" type="text" placeholder="Enter title"/>
+        </fieldset>
+        <fieldset class="form-group">
+          <input class="form-control mb-2 mr-sm-2" formControlName="body" type="text" placeholder="Enter description"/>
+        </fieldset>
+        <button class="btn btn-success" (click)="submitForm()">Add</button>
+      </form>
     </div>
   </div>
   <br/>
@@ -13,7 +22,7 @@
           <th>Id</th>
           <th>Name</th>
           <th>Description</th>
-          <th>Delete</th>
+          <th style="width: 15%">Operations</th>
         </tr>
         </thead>
         <tbody>
@@ -21,7 +30,7 @@
           <td>{{company.id}}</td>
           <td>{{company.title}}</td>
           <td>{{company.body}}</td>
-          <td><button class="btn btn-danger" (click)="delete(company.id)">Delete</button> </td>
+          <td><button class="btn btn-success btn-sm" (click)="edit(company)">Edit</button> &nbsp;&nbsp; <button class="btn btn-danger btn-sm" (click)="delete(company.id)">Delete</button> </td>
         </tr>
         </tbody>
       </table>

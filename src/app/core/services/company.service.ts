@@ -14,4 +14,12 @@ export class CompanyService {
   delete(id): Observable<Company> {
     return this.apiService.delete(environment.ggURL + environment.companyEndpoint + '/' + id);
   }
+
+  save(company): Observable<Company> {
+    if (company.id) {
+      return this.apiService.put(environment.ggURL + environment.companyEndpoint + '/' + company.id, company);
+    } else {
+      return this.apiService.post(environment.ggURL + environment.companyEndpoint, company);
+    }
+  }
 }
