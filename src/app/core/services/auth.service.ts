@@ -118,9 +118,10 @@ export class AuthService {
     window.localStorage.idToken = tokens.idToken;
   }
 
-  destroyToken() {
+  destroyTokens() {
     this.isAuthenticatedSubject.next(false);
     window.localStorage.removeItem('accessToken');
+    window.localStorage.removeItem('idToken');
   }
 
   // Verify accessToken in localstorage with server & load ..
@@ -130,10 +131,10 @@ export class AuthService {
       this.getUserInfo()
         .subscribe(
           (data) => this.setAuth(data),
-          err => this.destroyToken()
+          err => this.destroyTokens()
         );
     } else {
-      this.destroyToken();
+      this.destroyTokens();
     }
   }
 
@@ -147,7 +148,9 @@ export class AuthService {
   }
 
   logout() {
+    const idToken = window.localStorage.idToken;
+    this.destroyTokens();
     const {openid_connect_url, end_session_endpoint , logout_redirect_uri} = environment;
-    window.location.href = openid_connect_url + end_session_endpoint + '?' + 'post_logout_redirect_uri=' + logout_redirect_uri + '&id_token_hint=' + window.localStorage.idToken;
+    window.location.href = openid_connect_url + end_session_endpoint + '?' + 'post_logout_redirect_uri=' + logout_redirect_uri + '&id_token_hint=' + idToken;
   }
 }
