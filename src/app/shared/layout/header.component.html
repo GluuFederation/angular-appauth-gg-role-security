@@ -9,7 +9,7 @@
         <a class="nav-link" routerLink="/company" [routerLinkActive]="'active'">Company</a>
       </li>
       <li class="nav-item" *appShowAuthed="false">
-        <a class="nav-link" routerLink="/login" [routerLinkActive]="'active'">Login</a>
+        <a class="nav-link" routerLink="/login" id="loginLink" [routerLinkActive]="'active'">Login</a>
       </li>
       <li class="nav-item" *appShowAuthed="true">
         <a class="nav-link" routerLink="/logout" [routerLinkActive]="'active'">Logout</a>

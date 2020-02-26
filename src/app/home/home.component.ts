@@ -6,7 +6,7 @@ import {AuthService} from '../core/services';
   templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
-  private userInfo: any = null;
+  public userInfo: any = null;
 
   constructor(private authService: AuthService) {
 

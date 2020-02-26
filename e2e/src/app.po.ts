@@ -6,6 +6,26 @@ export class AppPage {
   }
 
   getTitleText() {
-    return element(by.css('app-root .content span')).getText() as Promise<string>;
+    return element(by.css('.card-title')).getText() as Promise<string>;
+  }
+
+  getLoginLinkElement() {
+    return element(by.id('loginLink'));
+  }
+
+  getUsernameElement() {
+    return element(by.id('loginForm:username'));
+  }
+
+  getPasswordElement() {
+    return element(by.id('loginForm:password'));
+  }
+
+  getIDPLoginButtonElement() {
+    return element(by.id('loginForm:loginButton'));
+  }
+
+  getAuthorizedAllowButtonElement() {
+    return element(by.id('authorizeForm:allowButton'));
   }
 }
